@@ -28,6 +28,17 @@
 
 
 ## 输入
+### txt 示例
+    #Lesson 1
+    hello
+    world
+
+    #Lesson 2
+    python
+    is
+    awesome
+
+
 ### json 示例
 ```javascript
  [
@@ -41,9 +52,9 @@
  {
      "name": "Lesson 2",
      "words": [
-         "only",
-         "a",
-         "test"
+         "python",
+         "is",
+         "awesome"
      ]
  }
  ]

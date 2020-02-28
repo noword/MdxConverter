@@ -37,10 +37,18 @@ def get_words_from_json(name):
 
 
 def get_words_from_txt(name):
-    return {
-        "name": "Words",
-        "words": [w.strip() for w in open(name).readlines()]
-    }
+    result = []
+    for line in open(name).readlines():
+        line = line.strip()
+        if len(line) == 0:
+            continue
+        if line.startswith('#'):
+            result.append({'name': line.strip('#'), 'words': []})
+        else:
+            if len(result) == 0:
+                result.append({'name': 'Words', 'words': []})
+            result[-1]['words'].append(line)
+    return result
 
 
 def get_words_from_xls(name):
