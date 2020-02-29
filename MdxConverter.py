@@ -8,6 +8,7 @@ import os
 import re
 import pdfkit
 from bs4 import BeautifulSoup
+import sys
 
 ADDITIONAL_STYLES = '''
 a.lesson {font-size:120%; color: #1a237e; text-decoration: none; cursor: pointer;}
@@ -117,6 +118,9 @@ def lookup(dictionary, word):
     definitions = dictionary.mdx_lookup(word)
     if len(definitions) == 0:
         definitions = dictionary.mdx_lookup(word, ignorecase=True)
+    if len(definitions) == 0:
+        print('WARNING: "%s" not found' % word, file=sys.stderr)
+        return '<span><b>WARNING:</b> "%s" not found</span>' % word
     definition = definitions[0]
     if definition.startswith('@@@LINK='):
         return dictionary.mdx_lookup(definition.replace('@@@LINK=', '').strip())[0].strip()
