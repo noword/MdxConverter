@@ -232,7 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('--invalid', action='store', type=int, default=2, choices=[0, 1, 2],
                         help='action for meeting invalid words\n'
                         '0: exit immediately\n'
-                        '1: output warnning message\n'
+                        '1: output warnning message to pdf/html\n'
                         '2: collect them to invalid_words.txt (default)')
     args = parser.parse_args()
 

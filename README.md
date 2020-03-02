@@ -14,7 +14,7 @@
       --type [{pdf,html}]
       --invalid {0,1,2}    action for meeting invalid words
                            0: exit immediately
-                           1: output warnning message
+                           1: output warnning message to pdf/html
                            2: collect them to invalid_words.txt (default)
 
 例如：
