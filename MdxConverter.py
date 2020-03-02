@@ -9,6 +9,8 @@ import re
 import pdfkit
 from bs4 import BeautifulSoup
 import sys
+from enum import IntEnum
+from collections import OrderedDict
 
 ADDITIONAL_STYLES = '''
 a.lesson {font-size:120%; color: #1a237e; text-decoration: none; cursor: pointer;}
@@ -22,6 +24,14 @@ div.right {overflow-y: auto; overflow-x: hidden; padding-left: 10px; height: 100
 
 H1_STYLE = 'color:#FFFFFF; background-color:#003366; padding-left:20px; line-height:initial;'
 H2_STYLE = 'color:#CCFFFF; background-color:#336699; padding-left:20px; line-height:initial;'
+
+INVALID_WORDS_FILENAME = 'invalid_words.txt'
+
+
+class InvalidAction(IntEnum):
+    Exit = 0
+    Output = 1
+    Collect = 2
 
 
 def get_words(name):
@@ -119,8 +129,7 @@ def lookup(dictionary, word):
     if len(definitions) == 0:
         definitions = dictionary.mdx_lookup(word, ignorecase=True)
     if len(definitions) == 0:
-        print('WARNING: "%s" not found' % word, file=sys.stderr)
-        return '<span><b>WARNING:</b> "%s" not found</span>' % word
+        return ''
     definition = definitions[0]
     if definition.startswith('@@@LINK='):
         return dictionary.mdx_lookup(definition.replace('@@@LINK=', '').strip())[0].strip()
@@ -136,12 +145,14 @@ def verify_words(dictionary, lessons):
             lookup(dictionary, word)
 
 
-def mdx2html(mdx_name, input_name, output_name, with_toc=True):
+def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect, with_toc=True):
+    print(invalid_action == InvalidAction.Exit)
     dictionary = mdict_query.IndexBuilder(mdx_name)
     lessons = get_words(input_name)
 
     right_soup = BeautifulSoup('<body style="font-family:Arial Unicode MS;"><div class="right"></div></body>', 'lxml')
     left_soup = BeautifulSoup('<div class="left"></div>', 'lxml')
+    invalid_words = OrderedDict()
 
     for i, lesson in enumerate(lessons):
         print(lesson['name'])
@@ -156,7 +167,21 @@ def mdx2html(mdx_name, input_name, output_name, with_toc=True):
 
         for j, word in enumerate(lesson['words']):
             print('\t', word)
-            definition = BeautifulSoup(lookup(dictionary, word), 'lxml')
+            result = lookup(dictionary, word)
+            if len(result) == 0:  # not found
+                print('WARNING: "%s" not found' % word, file=sys.stderr)
+                if invalid_action == InvalidAction.Exit:
+                    print('*** Exit now. Do nothing. ***')
+                    sys.exit()
+                elif invalid_action == InvalidAction.Output:
+                    result = '<span><b>WARNING:</b> "%s" not found</span>' % word
+                else:  # invalid_action == InvalidAction.Collect
+                    if lesson['name'] in invalid_words:
+                        invalid_words[lesson['name']].append(word)
+                    else:
+                        invalid_words[lesson['name']] = [word, ]
+                    continue
+            definition = BeautifulSoup(result, 'lxml')
             if i == j == 0:
                 right_soup.html.insert_before(definition.head)
                 right_soup.head.append(right_soup.new_tag('meta', charset='utf-8'))
@@ -183,20 +208,32 @@ def mdx2html(mdx_name, input_name, output_name, with_toc=True):
 
     open(output_name, "wb").write(right_soup.prettify().encode('utf-8'))
 
+    if len(invalid_words) > 0:
+        with open(INVALID_WORDS_FILENAME, 'w') as fp:
+            for lesson, words in invalid_words.items():
+                fp.write('#%s\n' % lesson)
+                for word in words:
+                    fp.write(word + '\n')
 
-def mdx2pdf(mdx_name, input_name, output_name):
+
+def mdx2pdf(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect,):
     TEMP_FILE = "temp.html"
-    mdx2html(mdx_name, input_name, TEMP_FILE, False)
+    mdx2html(mdx_name, input_name, TEMP_FILE, False, invalid_action)
     pdfkit.from_file(TEMP_FILE, output_name)
     os.remove(TEMP_FILE)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,)
     parser.add_argument('mdx_name', action='store', nargs=1)
     parser.add_argument('input_name', action='store', nargs=1)
     parser.add_argument('output_name', action='store', nargs="?")
     parser.add_argument('--type', action='store', choices=["pdf", "html"], nargs="?")
+    parser.add_argument('--invalid', action='store', type=int, default=2, choices=[0, 1, 2],
+                        help='action for meeting invalid words\n'
+                        '0: exit immediately\n'
+                        '1: output warnning message\n'
+                        '2: collect them to invalid_words.txt (default)')
     args = parser.parse_args()
 
     mdx_name = args.mdx_name[0]
@@ -218,4 +255,4 @@ if __name__ == '__main__':
     {
         'pdf': mdx2pdf,
         'html': mdx2html,
-    }[args.type.lower()](mdx_name, input_name, output_name)
+    }[args.type.lower()](mdx_name, input_name, output_name, args.invalid)
