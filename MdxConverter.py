@@ -169,12 +169,12 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
             print('\t', word)
             result = lookup(dictionary, word)
             if len(result) == 0:  # not found
-                print('WARNING: "%s" not found' % word, file=sys.stderr)
+                print(f'WARNING: "{word}" not found', file=sys.stderr)
                 if invalid_action == InvalidAction.Exit:
                     print('*** Exit now. Do nothing. ***')
                     sys.exit()
                 elif invalid_action == InvalidAction.Output:
-                    result = '<span><b>WARNING:</b> "%s" not found</span>' % word
+                    result = f'<span><b>WARNING:</b> "{word}" not found</span>'
                 else:  # invalid_action == InvalidAction.Collect
                     if lesson['name'] in invalid_words:
                         invalid_words[lesson['name']].append(word)
@@ -211,7 +211,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
     if len(invalid_words) > 0:
         with open(INVALID_WORDS_FILENAME, 'w') as fp:
             for lesson, words in invalid_words.items():
-                fp.write('#%s\n' % lesson)
+                fp.write(f'#{lesson}\n')
                 for word in words:
                     fp.write(word + '\n')
 
