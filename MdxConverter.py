@@ -146,7 +146,6 @@ def verify_words(dictionary, lessons):
 
 
 def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect, with_toc=True):
-    print(invalid_action == InvalidAction.Exit)
     dictionary = mdict_query.IndexBuilder(mdx_name)
     lessons = get_words(input_name)
 
@@ -216,9 +215,9 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
                     fp.write(word + '\n')
 
 
-def mdx2pdf(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect,):
+def mdx2pdf(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect):
     TEMP_FILE = "temp.html"
-    mdx2html(mdx_name, input_name, TEMP_FILE, False, invalid_action)
+    mdx2html(mdx_name, input_name, TEMP_FILE, invalid_action, False)
     pdfkit.from_file(TEMP_FILE, output_name)
     os.remove(TEMP_FILE)
 
