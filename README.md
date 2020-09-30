@@ -1,6 +1,7 @@
 这是一个用来从 mdx 字典中抓取所需的单词，并生成 html 或 pdf 文件的小工具。
 
 ## 用法
+This Software changes the Text written in Python into Text in Excel as shown in the Example
     usage: MdxConverter [-h] [--type [{pdf,html}]] [--invalid {0,1,2}]
                             mdx_name input_name [output_name]
 
