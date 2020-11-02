@@ -82,7 +82,7 @@ def get_css(soup, mdx_path, dictionary):
         css_key = dictionary.get_mdd_keys('*' + css_name)[0]
         css = dictionary.mdd_lookup(css_key)[0]
     else:
-        css = ''
+        css = b''
 
     return css.decode('utf-8')
 
