@@ -182,13 +182,17 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
                     continue
             definition = BeautifulSoup(result, 'lxml')
             if i == j == 0:
-                right_soup.html.insert_before(definition.head)
+                if definition.head is None:
+                    right_soup.html.insert_before(right_soup.new_tag('head'))
+                else:
+                    right_soup.html.insert_before(definition.head)
                 right_soup.head.append(right_soup.new_tag('meta', charset='utf-8'))
 
             h2 = right_soup.new_tag('h2', id='word_' + word, style=H2_STYLE)
             h2.string = word
             right_soup.div.append(h2)
-            for content in definition.find('body').findChildren(recursive=False):
+
+            for content in definition.find('body').contents:
                 right_soup.div.append(content)
 
             a = left_soup.new_tag('a', href='#word_' + word, **{'class': 'word'})
