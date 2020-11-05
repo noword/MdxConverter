@@ -191,9 +191,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
             h2 = right_soup.new_tag('h2', id='word_' + word, style=H2_STYLE)
             h2.string = word
             right_soup.div.append(h2)
-
-            for content in definition.find('body').contents:
-                right_soup.div.append(content)
+            right_soup.div.append(definition.body)
 
             a = left_soup.new_tag('a', href='#word_' + word, **{'class': 'word'})
             a.string = word
