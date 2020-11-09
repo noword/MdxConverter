@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import sys
 from enum import IntEnum
 from collections import OrderedDict
+from chardet import detect
 
 ADDITIONAL_STYLES = '''
 a.lesson {font-size:120%; color: #1a237e; text-decoration: none; cursor: pointer;}
@@ -34,6 +35,11 @@ class InvalidAction(IntEnum):
     Collect = 2
 
 
+def open_encoding_file(name):
+    encoding = detect(open(name, 'rb').read())['encoding']
+    return open(name, encoding=encoding)
+
+
 def get_words(name):
     ext = os.path.splitext(name)[1].lower()
     return {'.xls': get_words_from_xls,
@@ -44,12 +50,12 @@ def get_words(name):
 
 
 def get_words_from_json(name):
-    return json.load(open(name))
+    return json.load(open_encoding_file(name))
 
 
 def get_words_from_txt(name):
     result = []
-    for line in open(name).readlines():
+    for line in open_encoding_file(name).readlines():
         line = line.strip()
         if len(line) == 0:
             continue

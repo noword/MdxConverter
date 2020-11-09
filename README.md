@@ -24,13 +24,15 @@
 ## 依赖库
 [mdict-query](https://github.com/mmjang/mdict-query)
 
-[BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
+[BeautifulSoup4](https://pypi.org/project/beautifulsoup4)
 
-[openpyxl](https://pypi.org/project/openpyxl/)
+[openpyxl](https://pypi.org/project/openpyxl)
 
 [pdfkit](https://github.com/JazzCore/python-pdfkit)
 
-[lxml](https://lxml.de/)
+[lxml](https://lxml.de)
+
+[chardet](https://github.com/chardet/chardet)
 
 ## 输入
 ### txt 示例
