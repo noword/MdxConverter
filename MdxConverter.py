@@ -5,7 +5,6 @@ import openpyxl
 import json
 import argparse
 import os
-import re
 import pdfkit
 from bs4 import BeautifulSoup
 import sys
@@ -214,7 +213,9 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
     right_soup = merge_css(right_soup, os.path.split(mdx_name)[0], dictionary, with_toc)
     grab_images(right_soup, dictionary)
 
-    open(output_name, "wb").write(right_soup.prettify().encode('utf-8'))
+    html = right_soup.prettify().encode('utf-8')
+    html = html.replace(b'<body>', b'').replace(b'</body>', b'', html.count(b'</body>') - 1)
+    open(output_name, "wb").write(html)
 
     if len(invalid_words) > 0:
         with open(INVALID_WORDS_FILENAME, 'w') as fp:
