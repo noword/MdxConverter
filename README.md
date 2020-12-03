@@ -1,4 +1,4 @@
-这是一个用来从 mdx 字典中抓取所需的单词，并生成 html 或 pdf 文件的小工具。
+这是一个用来从 mdx 字典中抓取所需的单词，并生成 html，pdf 或 jpg 文件的小工具。
 
 ## 用法
     usage: MdxConverter [-h] [--type [{pdf,html}]] [--invalid {0,1,2}]
@@ -29,6 +29,8 @@
 [openpyxl](https://pypi.org/project/openpyxl)
 
 [pdfkit](https://github.com/JazzCore/python-pdfkit)
+
+[imgkit](https://github.com/jarrekk/imgkit)
 
 [lxml](https://lxml.de)
 
@@ -76,3 +78,6 @@
 
 ### PDF
 ![](images/pdf.jpg)
+
+### JPG
+略

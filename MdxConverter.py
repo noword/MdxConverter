@@ -6,6 +6,7 @@ import json
 import argparse
 import os
 import pdfkit
+import imgkit
 from bs4 import BeautifulSoup
 import sys
 from enum import IntEnum
@@ -26,6 +27,7 @@ H1_STYLE = 'color:#FFFFFF; background-color:#003366; padding-left:20px; line-hei
 H2_STYLE = 'color:#CCFFFF; background-color:#336699; padding-left:20px; line-height:initial;'
 
 INVALID_WORDS_FILENAME = 'invalid_words.txt'
+TEMP_FILE = "temp.html"
 
 
 class InvalidAction(IntEnum):
@@ -226,9 +228,14 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
 
 
 def mdx2pdf(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect):
-    TEMP_FILE = "temp.html"
     mdx2html(mdx_name, input_name, TEMP_FILE, invalid_action, False)
     pdfkit.from_file(TEMP_FILE, output_name)
+    os.remove(TEMP_FILE)
+
+
+def mdx2jpg(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect):
+    mdx2html(mdx_name, input_name, TEMP_FILE, invalid_action, False)
+    imgkit.from_file(TEMP_FILE, output_name, options={'enable-local-file-access': ''})
     os.remove(TEMP_FILE)
 
 
@@ -264,4 +271,5 @@ if __name__ == '__main__':
     {
         'pdf': mdx2pdf,
         'html': mdx2html,
+        'jpg': mdx2jpg,
     }[args.type.lower()](mdx_name, input_name, output_name, args.invalid)
