@@ -160,7 +160,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
     left_soup = BeautifulSoup('<div class="left"></div>', 'lxml')
     invalid_words = OrderedDict()
 
-    for i, lesson in enumerate(lessons):
+    for lesson in lessons:
         print(lesson['name'])
         h1 = right_soup.new_tag('h1', id='lesson_' + lesson['name'], style=H1_STYLE)
         h1.string = lesson['name']
@@ -171,7 +171,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
         left_soup.div.append(a)
         left_soup.div.append(left_soup.new_tag('br'))
 
-        for j, word in enumerate(lesson['words']):
+        for word in lesson['words']:
             print('\t', word)
             result = lookup(dictionary, word)
             if len(result) == 0:  # not found
