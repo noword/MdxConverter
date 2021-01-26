@@ -188,11 +188,8 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
                         invalid_words[lesson['name']] = [word, ]
                     continue
             definition = BeautifulSoup(result, 'lxml')
-            if i == j == 0:
-                if definition.head is None:
-                    right_soup.html.insert_before(right_soup.new_tag('head'))
-                else:
-                    right_soup.html.insert_before(definition.head)
+            if right_soup.head is None and definition.head is not None:
+                right_soup.html.insert_before(definition.head)
                 right_soup.head.append(right_soup.new_tag('meta', charset='utf-8'))
 
             h2 = right_soup.new_tag('h2', id='word_' + word, style=H2_STYLE)
