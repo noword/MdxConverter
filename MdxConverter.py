@@ -16,7 +16,7 @@ from chardet import detect
 ADDITIONAL_STYLES = '''
 a.lesson {font-size:120%; color: #1a237e; text-decoration: none; cursor: pointer;}
 a.lesson:hover {background-color: #e3f2fd}
-a.word {color: #1565c0; text-decoration: none; cursor: pointer;}
+a.word {color: #1565c0; text-decoration: none; cursor: pointer; font-variant: normal; font-weight: normal; }
 a.word:hover {background-color: #e3f2fd;}
 div.main {width: 100%; height: 100%;}
 div.left {width: 150px; overflow: auto; float: left; height: 100%;}
