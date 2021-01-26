@@ -215,7 +215,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
     right_soup = merge_css(right_soup, os.path.split(mdx_name)[0], dictionary, with_toc)
     right_soup = grab_images(right_soup, dictionary)
 
-    html = right_soup.prettify().encode('utf-8')
+    html = str(right_soup).encode('utf-8')
     html = html.replace(b'<body>', b'').replace(b'</body>', b'', html.count(b'</body>') - 1)
     open(output_name, "wb").write(html)
 
