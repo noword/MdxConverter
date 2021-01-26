@@ -12,12 +12,14 @@ import sys
 from enum import IntEnum
 from collections import OrderedDict
 from chardet import detect
+from base64 import b64encode
 
 ADDITIONAL_STYLES = '''
-a.lesson {font-size:120%; color: #1a237e; text-decoration: none; cursor: pointer;}
+a.lesson {font-size:120%; color: #1a237e; text-decoration: none; cursor: pointer; border-bottom: none;}
 a.lesson:hover {background-color: #e3f2fd}
-a.word {color: #1565c0; text-decoration: none; cursor: pointer; font-variant: normal; font-weight: normal; }
+a.word {color: #1565c0; text-decoration: none; cursor: pointer; font-variant: normal; font-weight: normal; border-bottom: none;}
 a.word:hover {background-color: #e3f2fd;}
+a.invalid_word {color: #909497;}
 div.main {width: 100%; height: 100%;}
 div.left {width: 150px; overflow: auto; float: left; height: 100%;}
 div.right {overflow-y: auto; overflow-x: hidden; padding-left: 10px; height: 100%;}
@@ -107,7 +109,7 @@ def merge_css(soup, mdx_path, dictionary, append_additinal_styles=True):
 
 def grab_images(soup, dictionary):
     if not hasattr(dictionary, '_mdd_db'):
-        return
+        return soup
 
     grabed = set()
     for img in soup.find_all('img'):
@@ -121,13 +123,9 @@ def grab_images(soup, dictionary):
             src = '\\' + src
         imgs = dictionary.mdd_lookup(src.replace('/', '\\'))
         if len(imgs) > 0:
-            src = src[1:]
-            print('dump', src)
-            try:
-                os.makedirs(os.path.split(src)[0])
-            except BaseException:
-                pass
-            open(src, "wb").write(imgs[0])
+            print(f'got image {src}')
+            img['src'] = 'data:image/png;base64, ' + b64encode(imgs[0]).decode('ascii')
+    return soup
 
 
 def lookup(dictionary, word):
@@ -135,6 +133,8 @@ def lookup(dictionary, word):
     definitions = dictionary.mdx_lookup(word)
     if len(definitions) == 0:
         definitions = dictionary.mdx_lookup(word, ignorecase=True)
+    if len(definitions) == 0:
+        definitions = dictionary.mdx_lookup(word.replace('-', ''), ignorecase=True)
     if len(definitions) == 0:
         return ''
     definition = definitions[0]
@@ -171,6 +171,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
         left_soup.div.append(a)
         left_soup.div.append(left_soup.new_tag('br'))
 
+        invalid = False
         for word in lesson['words']:
             print('\t', word)
             result = lookup(dictionary, word)
@@ -180,6 +181,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
                     print('*** Exit now. Do nothing. ***')
                     sys.exit()
                 elif invalid_action == InvalidAction.Output:
+                    invalid = True
                     result = f'<span><b>WARNING:</b> "{word}" not found</span>'
                 else:  # invalid_action == InvalidAction.Collect
                     if lesson['name'] in invalid_words:
@@ -197,7 +199,8 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
             right_soup.div.append(h2)
             right_soup.div.append(definition.body)
 
-            a = left_soup.new_tag('a', href='#word_' + word, **{'class': 'word'})
+            a = left_soup.new_tag('a', href='#word_' + word, **{'class': 'word' + (' invalid_word' if invalid else '')})
+            invalid = False
             a.string = word
             left_soup.div.append(a)
             left_soup.div.append(left_soup.new_tag('br'))
@@ -210,7 +213,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
         right_soup.div.insert_before(left_soup.div)
 
     right_soup = merge_css(right_soup, os.path.split(mdx_name)[0], dictionary, with_toc)
-    grab_images(right_soup, dictionary)
+    right_soup = grab_images(right_soup, dictionary)
 
     html = right_soup.prettify().encode('utf-8')
     html = html.replace(b'<body>', b'').replace(b'</body>', b'', html.count(b'</body>') - 1)
