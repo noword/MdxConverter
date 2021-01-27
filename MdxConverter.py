@@ -29,7 +29,7 @@ H1_STYLE = 'color:#FFFFFF; background-color:#003366; padding-left:20px; line-hei
 H2_STYLE = 'color:#CCFFFF; background-color:#336699; padding-left:20px; line-height:initial;'
 
 INVALID_WORDS_FILENAME = 'invalid_words.txt'
-TEMP_FILE = "temp.html"
+TEMP_FILE = 'temp.html'
 
 
 class InvalidAction(IntEnum):
@@ -78,12 +78,12 @@ def get_words_from_xls(name):
         ws = wb[name]
         words = [row[0].value for row in ws.iter_rows(min_row=ws.min_row, max_row=ws.max_row, max_col=1)]
         words = list(filter(lambda x: x is not None and len(x) > 0, words))
-        result.append({"name": name, "words": words})
+        result.append({'name': name, 'words': words})
     return result
 
 
 def get_css(soup, mdx_path, dictionary):
-    css_name = soup.head.link["href"]
+    css_name = soup.head.link['href']
     css_path = os.path.join(mdx_path, css_name)
     if os.path.exists(css_path):
         css = open(css_path, 'rb').read()
@@ -243,8 +243,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,)
     parser.add_argument('mdx_name', action='store', nargs=1)
     parser.add_argument('input_name', action='store', nargs=1)
-    parser.add_argument('output_name', action='store', nargs="?")
-    parser.add_argument('--type', action='store', choices=["pdf", "html"], nargs="?")
+    parser.add_argument('output_name', action='store', nargs='?')
+    parser.add_argument('--type', action='store', choices=['pdf', 'html', 'jpg'], nargs='?')
     parser.add_argument('--invalid', action='store', type=int, default=2, choices=[0, 1, 2],
                         help='action for meeting invalid words\n'
                         '0: exit immediately\n'
@@ -261,7 +261,7 @@ if __name__ == '__main__':
         else:
             output_name = os.path.split(input_name)[1]
             output_name = os.path.splitext(output_name)[0]
-            output_name += "." + args.type
+            output_name += '.' + args.type
     else:
         output_name = args.output_name
 
