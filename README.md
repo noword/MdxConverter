@@ -1,21 +1,20 @@
 这是一个用来从 mdx 字典中抓取所需的单词，并生成 html，pdf 或 jpg 文件的小工具。
 
 ## 用法
-    usage: MdxConverter [-h] [--type [{pdf,html}]] [--invalid {0,1,2}]
-                            mdx_name input_name [output_name]
+    usage: MdxConverter.py [-h] [--type [{pdf,html,jpg}]] [--invalid {0,1,2}] mdx_name input_name [output_name]
 
     positional arguments:
-      mdx_name
-      input_name
-      output_name
+    mdx_name
+    input_name
+    output_name
 
     optional arguments:
-      -h, --help           show this help message and exit
-      --type [{pdf,html,jpg}]
-      --invalid {0,1,2}    action for meeting invalid words
-                           0: exit immediately
-                           1: output warnning message to pdf/html
-                           2: collect them to invalid_words.txt (default)
+    -h, --help            show this help message and exit
+    --type [{pdf,html,jpg}]
+    --invalid {0,1,2}     action for meeting invalid words
+                            0: exit immediately
+                            1: output warnning message to pdf/html
+                            2: collect them to invalid_words.txt (default)
 
 例如：
     
