@@ -45,11 +45,12 @@ def open_encoding_file(name):
 
 def get_words(name):
     ext = os.path.splitext(name)[1].lower()
-    return {'.xls': get_words_from_xls,
-            '.xlsx': get_words_from_xls,
-            '.json': get_words_from_json,
-            '.txt': get_words_from_txt,
-            }[ext](name)
+    return {
+        '.xls': get_words_from_xls,
+        '.xlsx': get_words_from_xls,
+        '.json': get_words_from_json,
+        '.txt': get_words_from_txt,
+    }[ext](name)
 
 
 def get_words_from_json(name):
@@ -187,7 +188,9 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
                     if lesson['name'] in invalid_words:
                         invalid_words[lesson['name']].append(word)
                     else:
-                        invalid_words[lesson['name']] = [word, ]
+                        invalid_words[lesson['name']] = [
+                            word,
+                        ]
                     continue
             definition = BeautifulSoup(result, 'lxml')
             if right_soup.head is None and definition.head is not None:
@@ -229,7 +232,7 @@ def mdx2html(mdx_name, input_name, output_name, invalid_action=InvalidAction.Col
 
 def mdx2pdf(mdx_name, input_name, output_name, invalid_action=InvalidAction.Collect):
     mdx2html(mdx_name, input_name, TEMP_FILE, invalid_action, False)
-    pdfkit.from_file(TEMP_FILE, output_name)
+    pdfkit.from_file(TEMP_FILE, output_name, options={'dpi': '150', 'enable-local-file-access': ''})
     os.remove(TEMP_FILE)
 
 
@@ -240,16 +243,24 @@ def mdx2jpg(mdx_name, input_name, output_name, invalid_action=InvalidAction.Coll
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     parser.add_argument('mdx_name', action='store', nargs=1)
     parser.add_argument('input_name', action='store', nargs=1)
     parser.add_argument('output_name', action='store', nargs='?')
     parser.add_argument('--type', action='store', choices=['pdf', 'html', 'jpg'], nargs='?')
-    parser.add_argument('--invalid', action='store', type=int, default=2, choices=[0, 1, 2],
-                        help='action for meeting invalid words\n'
-                        '0: exit immediately\n'
-                        '1: output warnning message to pdf/html\n'
-                        '2: collect them to invalid_words.txt (default)')
+    parser.add_argument(
+        '--invalid',
+        action='store',
+        type=int,
+        default=2,
+        choices=[0, 1, 2],
+        help='action for meeting invalid words\n'
+        '0: exit immediately\n'
+        '1: output warnning message to pdf/html\n'
+        '2: collect them to invalid_words.txt (default)',
+    )
     args = parser.parse_args()
 
     mdx_name = args.mdx_name[0]
@@ -272,4 +283,6 @@ if __name__ == '__main__':
         'pdf': mdx2pdf,
         'html': mdx2html,
         'jpg': mdx2jpg,
-    }[args.type.lower()](mdx_name, input_name, output_name, args.invalid)
+    }[
+        args.type.lower()
+    ](mdx_name, input_name, output_name, args.invalid)
